@@ -110,4 +110,82 @@ class ProductServicePagingTest {
         assertEquals(6, meta.getTotalPages());
         assertEquals(30, meta.getTotalElements());
     }
+
+    @Test
+    void shouldReturnPaginationMetaData() {
+        ApiResponse<List<Product>> response =
+                productService.getProductsPage(new ProductPageRequest(0, 5));
+
+        assertNotNull(response.getMeta());
+        assertInstanceOf(PaginationMetaData.class, response.getMeta());
+    }
+
+    @Test
+    void shouldReturnNotNullDataForPagedResponse() {
+        ApiResponse<List<Product>> response =
+                productService.getProductsPage(new ProductPageRequest(0, 5));
+
+        assertNotNull(response.getData());
+    }
+
+    @Test
+    void whenSizeIs30ThenTotalPagesIs1() {
+        ApiResponse<List<Product>> response =
+                productService.getProductsPage(new ProductPageRequest(0, 30));
+
+        PaginationMetaData meta = (PaginationMetaData) response.getMeta();
+
+        assertEquals(1, meta.getTotalPages());
+        assertTrue(meta.isFirst());
+        assertTrue(meta.isLast());
+        assertEquals(30, response.getData().size());
+    }
+
+    @Test
+    void whenSizeIs1ThenTotalPagesIs30() {
+        ApiResponse<List<Product>> response =
+                productService.getProductsPage(new ProductPageRequest(0, 1));
+
+        PaginationMetaData meta = (PaginationMetaData) response.getMeta();
+
+        assertEquals(30, meta.getTotalPages());
+        assertEquals(1, response.getData().size());
+        assertTrue(meta.isFirst());
+        assertFalse(meta.isLast());
+    }
+
+    @Test
+    void whenMiddlePageThenFirstAndLastAreFalse() {
+        ApiResponse<List<Product>> response =
+                productService.getProductsPage(new ProductPageRequest(1, 5));
+
+        PaginationMetaData meta = (PaginationMetaData) response.getMeta();
+
+        assertFalse(meta.isFirst());
+        assertFalse(meta.isLast());
+        assertEquals(1, meta.getNumber());
+        assertEquals(5, response.getData().size());
+    }
+
+    @Test
+    void shouldAlwaysReturnTotalElements30() {
+        ApiResponse<List<Product>> response =
+                productService.getProductsPage(new ProductPageRequest(2, 4));
+
+        PaginationMetaData meta = (PaginationMetaData) response.getMeta();
+
+        assertEquals(30, meta.getTotalElements());
+    }
+
+    @Test
+    void shouldReturnCode200ForPagedResponse() {
+        ApiResponse<List<Product>> response =
+                productService.getProductsPage(new ProductPageRequest(0, 5));
+
+        PaginationMetaData meta = (PaginationMetaData) response.getMeta();
+
+        assertEquals(200, meta.getCode());
+        assertTrue(meta.isSuccess());
+        assertNull(meta.getErrorMessage());
+    }
 }
