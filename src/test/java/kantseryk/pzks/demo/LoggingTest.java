@@ -61,4 +61,57 @@ class LoggingTest {
         assertTrue(output.toString().contains("0"));
         assertTrue(output.toString().contains("5"));
     }
+
+    @Test
+    void testLoggingOutputForGetAllProducts(CapturedOutput output) {
+        List<Product> products = underTest.getAllProducts();
+
+        assertNotNull(products);
+        assertTrue(output.toString().contains("ProductService.getAllProducts"));
+        assertTrue(output.toString().contains("Entering method:"));
+        assertTrue(output.toString().contains("completed successfully"));
+    }
+
+    @Test
+    void testLoggingOutputContainsPagingArguments(CapturedOutput output) {
+        ProductPageRequest request = new ProductPageRequest(1, 5);
+
+        ApiResponse<List<Product>> response = underTest.getProductsPage(request);
+
+        assertNotNull(response);
+        assertTrue(output.toString().contains("ProductService.getProductsPage"));
+        assertTrue(output.toString().contains("1"));
+        assertTrue(output.toString().contains("5"));
+    }
+
+    @Test
+    void testLoggingOutputForCountProducts(CapturedOutput output) {
+        long count = underTest.countProducts();
+
+        assertTrue(count > 0);
+        assertTrue(output.toString().contains("ProductService.countProducts"));
+        assertTrue(output.toString().contains("completed successfully"));
+    }
+
+    @Test
+    void testLoggingOutputContainsResultForGetById(CapturedOutput output) {
+        String id = underTest.getAllProducts().get(0).getId();
+
+        Product product = underTest.getById(id);
+
+        assertNotNull(product);
+        assertTrue(output.toString().contains("ProductService.getById"));
+        assertTrue(output.toString().contains(product.getName()));
+    }
+
+    @Test
+    void testLoggingOutputAfterMethodGetProductsPage(CapturedOutput output) {
+        ProductPageRequest request = new ProductPageRequest(0, 5);
+
+        ApiResponse<List<Product>> response = underTest.getProductsPage(request);
+
+        assertNotNull(response);
+        assertTrue(output.toString().contains("ProductService.getProductsPage"));
+        assertTrue(output.toString().contains("completed successfully"));
+    }
 }
