@@ -14,9 +14,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+
 /**
  * Author: Alona Kantseryk
  */
@@ -78,5 +81,9 @@ public class ProductService {
                 .meta(metaData)
                 .data(page.getContent())
                 .build();
+    }
+
+    public Product getById(String id) {
+        return productRepository.findById(id).orElse(null);
     }
 }
